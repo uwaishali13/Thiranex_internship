@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Contact | Uwaish Ali - Front End Developer</title>
+  <meta name="description" content="Get in touch with Uwaish Ali, a front end developer, using the accessible contact form for project inquiries and collaboration." />
+  <meta name="author" content="Uwaish Ali" />
+  <link rel="canonical" href="https://example.com/contact.html" />
+
+  <meta property="og:title" content="Contact Uwaish Ali" />
+  <meta property="og:description" content="Reach out to front end developer Uwaish Ali for project inquiries and collaboration." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://example.com/contact.html" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="header-inner container">
+      <a href="index.html" class="logo" aria-label="Uwaish Ali home page">Uwaish Ali</a>
+
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="contact.html" aria-current="page">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <section class="container" aria-labelledby="contact-heading">
+      <h1 id="contact-heading">Contact Me</h1>
+      <p>
+        Fill out the form below to send a message. Fields marked with
+        <span aria-hidden="true" class="required-indicator">*</span>
+        <span class="visually-hidden">an asterisk</span> are required.
+      </p>
+
+      <form action="#" method="post" novalidate aria-describedby="form-instructions">
+        <p id="form-instructions" class="form-hint">
+          All fields marked required must be completed before the form can be submitted.
+        </p>
+
+        <fieldset>
+          <legend>Your Details</legend>
+
+          <div class="form-field">
+            <label for="full-name">Full Name <span class="required-indicator" aria-hidden="true">*</span></label>
+            <input
+              type="text"
+              id="full-name"
+              name="full-name"
+              autocomplete="name"
+              required
+              aria-required="true"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email Address <span class="required-indicator" aria-hidden="true">*</span></label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="email"
+              required
+              aria-required="true"
+              aria-describedby="email-hint"
+            />
+            <span id="email-hint" class="form-hint">We'll never share your email with anyone else.</span>
+          </div>
+
+          <div class="form-field">
+            <label for="phone">Phone Number (optional)</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              autocomplete="tel"
+              aria-describedby="phone-hint"
+            />
+            <span id="phone-hint" class="form-hint">Format: +1 555 123 4567</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Your Message</legend>
+
+          <div class="form-field">
+            <label for="subject">Subject <span class="required-indicator" aria-hidden="true">*</span></label>
+            <select id="subject" name="subject" required aria-required="true">
+              <option value="">Select a subject</option>
+              <option value="general">General Inquiry</option>
+              <option value="project">Project Proposal</option>
+              <option value="job">Job Opportunity</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="message">Message <span class="required-indicator" aria-hidden="true">*</span></label>
+            <textarea
+              id="message"
+              name="message"
+              rows="6"
+              required
+              aria-required="true"
+              aria-describedby="message-hint"
+            ></textarea>
+            <span id="message-hint" class="form-hint">Please provide as much detail as possible.</span>
+          </div>
+        </fieldset>
+
+        <div class="form-field">
+          <label for="contact-method">Preferred Contact Method</label>
+          <select id="contact-method" name="contact-method">
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn">Send Message</button>
+      </form>
+    </section>
+
+    <section class="container" aria-labelledby="alt-contact-heading">
+      <h2 id="alt-contact-heading">Other Ways to Reach Me</h2>
+      <ul>
+        <li>Email: <a href="mailto:hello@example.com">hello@example.com</a></li>
+        <li>LinkedIn: <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer">linkedin.com/in/uwaishali<span class="visually-hidden"> (opens in new tab)</span></a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 Uwaish Ali. All rights reserved.</p>
+      <nav aria-label="Social media links">
+        <ul class="social-list">
+          <li><a href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub<span class="visually-hidden"> (opens in new tab)</span></a></li>
+          <li><a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer">LinkedIn<span class="visually-hidden"> (opens in new tab)</span></a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>
