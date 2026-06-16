@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Weather Dashboard</title>
+<style>
+  :root{
+    --ink:#1c2530;
+    --paper:#f6f3ec;
+    --line:#d9d3c4;
+    --accent:#c5562f;
+    --sky:#2f5d7c;
+    --mute:#6b6357;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Iowan Old Style','Georgia',serif;
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:48px 20px 80px;
+  }
+  .masthead{
+    width:100%;
+    max-width:760px;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:18px;
+    margin-bottom:28px;
+  }
+  .masthead .kicker{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--accent);
+    font-weight:700;
+  }
+  .masthead h1{
+    font-size:42px;
+    margin:6px 0 0;
+    font-weight:400;
+    letter-spacing:-0.01em;
+  }
+  .masthead .sub{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:13px;
+    color:var(--mute);
+    margin-top:6px;
+  }
+
+  .search-row{
+    width:100%;
+    max-width:760px;
+    display:flex;
+    gap:10px;
+    margin-bottom:28px;
+  }
+  .search-row input{
+    flex:1;
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:15px;
+    padding:13px 16px;
+    border:1.5px solid var(--ink);
+    background:var(--card);
+    color:var(--ink);
+    outline:none;
+  }
+  .search-row input:focus{
+    border-color:var(--accent);
+  }
+  .search-row button{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:13px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    font-weight:700;
+    padding:13px 22px;
+    border:1.5px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .search-row button:hover{
+    background:var(--accent);
+    border-color:var(--accent);
+  }
+  .search-row button:disabled{
+    opacity:.5;
+    cursor:wait;
+  }
+
+  .status{
+    width:100%;
+    max-width:760px;
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:14px;
+    min-height:20px;
+    margin-bottom:18px;
+  }
+  .status.error{ color:var(--accent); font-weight:600; }
+  .status.loading{ color:var(--mute); }
+  .status.empty{ color:var(--mute); font-style:italic; }
+
+  .dashboard{
+    width:100%;
+    max-width:760px;
+    display:none;
+  }
+  .dashboard.visible{ display:block; }
+
+  .location-card{
+    border:1.5px solid var(--ink);
+    background:var(--card);
+    padding:28px 30px;
+    margin-bottom:22px;
+    position:relative;
+  }
+  .location-card .place{
+    font-size:26px;
+    margin:0;
+  }
+  .location-card .coords{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:12px;
+    color:var(--mute);
+    margin-top:4px;
+    letter-spacing:.02em;
+  }
+  .location-card .updated{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:11px;
+    color:var(--mute);
+    position:absolute;
+    top:28px;
+    right:30px;
+    text-align:right;
+  }
+  .now-temp{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-top:18px;
+  }
+  .now-temp .big{
+    font-size:64px;
+    line-height:1;
+  }
+  .now-temp .desc{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:15px;
+    color:var(--sky);
+    font-weight:600;
+  }
+
+  .metrics{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin-bottom:22px;
+  }
+  .metric{
+    border:1.5px solid var(--line);
+    background:var(--card);
+    padding:18px;
+  }
+  .metric .label{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:10.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--mute);
+  }
+  .metric .value{
+    font-size:28px;
+    margin-top:6px;
+  }
+  .metric .value span{
+    font-size:14px;
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    color:var(--mute);
+  }
+
+  .forecast-title{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--mute);
+    border-top:1.5px solid var(--ink);
+    padding-top:14px;
+    margin-bottom:12px;
+  }
+  .forecast{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+  }
+  .day{
+    border:1px solid var(--line);
+    background:var(--card);
+    padding:12px 8px;
+    text-align:center;
+  }
+  .day .dname{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    color:var(--sky);
+  }
+  .day .drange{
+    font-size:15px;
+    margin-top:8px;
+  }
+  .day .drange .lo{
+    color:var(--mute);
+    font-size:13px;
+  }
+
+  @media (max-width:560px){
+    .masthead h1{ font-size:30px; }
+    .metrics{ grid-template-columns:1fr; }
+    .forecast{ grid-template-columns:repeat(5,1fr); gap:6px; }
+    .day{ padding:8px 4px; }
+    .now-temp .big{ font-size:48px; }
+    .location-card .updated{ position:static; display:block; margin-top:10px; text-align:left; }
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="kicker">Field Report</div>
+  <h1>Weather Dashboard</h1>
+  <div class="sub">Live conditions, sourced directly from Open-Meteo on each search.</div>
+</div>
+
+<div class="search-row">
+  <input id="cityInput" type="text" placeholder="Search a city — e.g. Lisbon, Austin, Nairobi" autocomplete="off" />
+  <button id="searchBtn">Search</button>
+</div>
+
+<div class="status" id="status"></div>
+
+<div class="dashboard" id="dashboard">
+  <div class="location-card">
+    <div class="updated" id="updated"></div>
+    <p class="place" id="placeName"></p>
+    <div class="coords" id="coords"></div>
+    <div class="now-temp">
+      <div class="big" id="bigTemp"></div>
+      <div class="desc" id="conditionDesc"></div>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="label">Feels Like</div>
+      <div class="value" id="feelsLike"></div>
+    </div>
+    <div class="metric">
+      <div class="label">Humidity</div>
+      <div class="value" id="humidity"></div>
+    </div>
+    <div class="metric">
+      <div class="label">Wind Speed</div>
+      <div class="value" id="windSpeed"></div>
+    </div>
+  </div>
+
+  <div class="forecast-title">Next 5 days</div>
+  <div class="forecast" id="forecast"></div>
+</div>
+
+<script>
+(() => {
+  const GEOCODE_URL = "https://geocoding-api.open-meteo.com/v1/search";
+  const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
+
+  const cityInput   = document.getElementById("cityInput");
+  const searchBtn   = document.getElementById("searchBtn");
+  const statusEl    = document.getElementById("status");
+  const dashboard   = document.getElementById("dashboard");
+
+  const placeName   = document.getElementById("placeName");
+  const coords      = document.getElementById("coords");
+  const updated     = document.getElementById("updated");
+  const bigTemp      = document.getElementById("bigTemp");
+  const conditionDesc= document.getElementById("conditionDesc");
+  const feelsLike    = document.getElementById("feelsLike");
+  const humidity     = document.getElementById("humidity");
+  const windSpeed     = document.getElementById("windSpeed");
+  const forecastEl   = document.getElementById("forecast");
+
+  // WMO weather code -> human description, per Open-Meteo's documented mapping
+  const WMO = {
+    0:"Clear sky",1:"Mainly clear",2:"Partly cloudy",3:"Overcast",
+    45:"Fog",48:"Freezing fog",
+    51:"Light drizzle",53:"Drizzle",55:"Dense drizzle",
+    56:"Light freezing drizzle",57:"Freezing drizzle",
+    61:"Light rain",63:"Rain",65:"Heavy rain",
+    66:"Light freezing rain",67:"Freezing rain",
+    71:"Light snow",73:"Snow",75:"Heavy snow",77:"Snow grains",
+    80:"Light showers",81:"Showers",82:"Violent showers",
+    85:"Light snow showers",86:"Snow showers",
+    95:"Thunderstorm",96:"Thunderstorm w/ hail",99:"Severe thunderstorm w/ hail"
+  };
+  const describeCode = code => WMO[code] ?? "Conditions unavailable";
+
+  function setStatus(message, kind) {
+    statusEl.textContent = message || "";
+    statusEl.className = "status" + (kind ? " " + kind : "");
+  }
+
+  function setLoading(isLoading) {
+    searchBtn.disabled = isLoading;
+    searchBtn.textContent = isLoading ? "Searching…" : "Search";
+  }
+
+  // Step 1: geocode the city name to lat/lon (Open-Meteo's geocoding endpoint)
+  async function geocodeCity(name) {
+    const url = `${GEOCODE_URL}?name=${encodeURIComponent(name)}&count=1&language=en&format=json`;
+    let response;
+    try {
+      response = await fetch(url);
+    } catch (networkErr) {
+      throw new Error("Network error — check your connection and try again.");
+    }
+    if (!response.ok) {
+      throw new Error(`Location lookup failed (status ${response.status}).`);
+    }
+    const data = await response.json();
+    if (!data.results || data.results.length === 0) {
+      throw new Error(`No city found matching "${name}".`);
+    }
+    const match = data.results[0];
+    return {
+      name: match.name,
+      country: match.country ?? "",
+      admin1: match.admin1 ?? "",
+      latitude: match.latitude,
+      longitude: match.longitude
+    };
+  }
+
+  // Step 2: fetch current + daily forecast for those coordinates
+  async function fetchForecast(lat, lon) {
+    const params = new URLSearchParams({
+      latitude: lat,
+      longitude: lon,
+      current: "temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code",
+      daily: "weather_code,temperature_2m_max,temperature_2m_min",
+      timezone: "auto",
+      forecast_days: "6"
+    });
+    const url = `${FORECAST_URL}?${params.toString()}`;
+
+    let response;
+    try {
+      response = await fetch(url);
+    } catch (networkErr) {
+      throw new Error("Network error while fetching weather data.");
+    }
+    if (!response.ok) {
+      throw new Error(`Weather service returned an error (status ${response.status}).`);
+    }
+    const data = await response.json();
+    if (!data.current || !data.daily) {
+      throw new Error("Weather data was incomplete or malformed.");
+    }
+    return data;
+  }
+
+  function renderDashboard(place, weather) {
+    const cur = weather.current;
+    const daily = weather.daily;
+
+    placeName.textContent = [place.name, place.admin1, place.country].filter(Boolean).join(", ");
+    coords.textContent = `${place.latitude.toFixed(2)}°, ${place.longitude.toFixed(2)}°`;
+
+    const obsTime = new Date(cur.time);
+    updated.textContent = "Observed " + obsTime.toLocaleString(undefined, {
+      weekday: "short", hour: "2-digit", minute: "2-digit"
+    });
+
+    bigTemp.textContent = `${Math.round(cur.temperature_2m)}°C`;
+    conditionDesc.textContent = describeCode(cur.weather_code);
+
+    feelsLike.innerHTML = `${Math.round(cur.apparent_temperature)}<span>°C</span>`;
+    humidity.innerHTML = `${Math.round(cur.relative_humidity_2m)}<span>%</span>`;
+    windSpeed.innerHTML = `${Math.round(cur.wind_speed_10m)}<span> km/h</span>`;
+
+    // 5-day forecast, skipping today (index 0)
+    forecastEl.innerHTML = "";
+    const days = daily.time.slice(1, 6);
+    days.forEach((dateStr, i) => {
+      const idx = i + 1;
+      const date = new Date(dateStr);
+      const dayCard = document.createElement("div");
+      dayCard.className = "day";
+      dayCard.innerHTML = `
+        <div class="dname">${date.toLocaleDateString(undefined, { weekday: "short" })}</div>
+        <div class="drange">${Math.round(daily.temperature_2m_max[idx])}°
+          <span class="lo">/ ${Math.round(daily.temperature_2m_min[idx])}°</span>
+        </div>
+      `;
+      forecastEl.appendChild(dayCard);
+    });
+
+    dashboard.classList.add("visible");
+  }
+
+  async function runSearch() {
+    const city = cityInput.value.trim();
+    if (!city) {
+      setStatus("Type a city name to search.", "empty");
+      return;
+    }
+
+    setLoading(true);
+    setStatus(`Looking up "${city}"…`, "loading");
+    dashboard.classList.remove("visible");
+
+    try {
+      const place = await geocodeCity(city);
+      setStatus(`Fetching live conditions for ${place.name}…`, "loading");
+      const weather = await fetchForecast(place.latitude, place.longitude);
+      renderDashboard(place, weather);
+      setStatus("", "");
+    } catch (err) {
+      setStatus(err.message || "Something went wrong. Please try again.", "error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  searchBtn.addEventListener("click", runSearch);
+  cityInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") runSearch();
+  });
+
+  // Load a default city on first paint so the dashboard isn't empty
+  cityInput.value = "Tokyo";
+  runSearch();
+})();
+</script>
+</body>
+</html>
